@@ -1,6 +1,7 @@
 # faabul_page_indicator
 
-![Sample image](https://raw.githubusercontent.com/yomio/faabul_color_picker/main/doc/sample.png)
+![Sample image](https://raw.githubusercontent.com/yomio/faabul_page_indicator/main/doc/sample.png)
+
 faabul_page_indicator is developed and used by [Faabul Live Quizzes][faabul_link]
 
 
@@ -9,7 +10,7 @@ faabul_page_indicator is developed and used by [Faabul Live Quizzes][faabul_link
 We have created this package since there was no existing package that would satisfy the following requirements:
 
 - Support for custom "dot" builder
-- Good UX for many pages use cases and a constrained space to display the indicator
+- Good UX for a use case when there are too many pages and a constrained space for the indicator
 - Support for both LTR and RTL locales
 - Good performance 
 
@@ -74,19 +75,22 @@ FaabulPageIndicator(
         ),
 )
 ```
-![Sample image](https://raw.githubusercontent.com/yomio/faabul_color_picker/main/doc/custom1.png)
+![Sample image](https://raw.githubusercontent.com/yomio/faabul_page_indicator/main/doc/custom1.png)
 
 You can also pass any widget, making each "dot" unique:
 
-![Sample image](https://raw.githubusercontent.com/yomio/faabul_color_picker/main/doc/custom2.png)
+![Sample image](https://raw.githubusercontent.com/yomio/faabul_page_indicator/main/doc/custom2.png)
 
-When using custom builders, make sure the rendered dot size corresponds to the itemSize property.
+When using custom builders, make sure the rendered dot's size corresponds to the `itemSize` property.
 
 ## Performance
 
-FaabulPageIndicator is optimized for performance. It uses a `ListView.builder` internally to display the dots. This means that only the visible dots are rendered and the indicator can handle a large number of pages without any performance degradation.
+FaabulPageIndicator is optimized for performance. It uses a `ListView.builder` internally to display the dots. This means that only the visible dots are rendered and the indicator can handle a large number of pages without any performance degradation. Internally the indicator only does work when the actual page (as integer) is changed in the `PageController`.
 
-Internally the indicator only does work when the actual page (as integer) is changed in the `PageController`.
+## See it live
 
+You can see the indicator in action in the [Faabul Live Quizzes][faabul_link_app] app every time you play a quiz.
+![Sample image](https://raw.githubusercontent.com/yomio/faabul_page_indicator/main/doc/quiz.png)
 
 [faabul_link]: https://faabul.com
+[faabul_link_app]: https://app.faabul.com

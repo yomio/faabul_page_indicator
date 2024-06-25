@@ -1,6 +1,6 @@
 name: faabul_page_indicator
 description: A performant PageView dot indicator for Flutter. Supports LTR / RTL, container overflow and custom item builders.
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/yomio/faabul_page_indicator
 repository: https://github.com/yomio/faabul_page_indicator.git
 issue_tracker: https://github.com/yomio/faabul_page_indicator/issues
@@ -10,6 +10,9 @@ topics:
  - scroll
  - indicator
  - widget
+screenshots:
+  - description: 'page indicator example'
+    path: doc/sample.png
 
 environment:
   sdk: '>=3.1.1 <4.0.0'
