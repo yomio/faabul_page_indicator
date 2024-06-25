@@ -1,3 +1,5 @@
+/// Package that provides a customizable "dots" page indicator for [PageController]
+
 library faabul_page_indicator;
 
 import 'dart:math';
@@ -186,7 +188,7 @@ class __PageIndicatorState extends State<_PageIndicator> {
             'FaabulPageIndicator has been given unbounded horizontal space. Please restrict the available width to a finite value, e.g. by wrapping it in a SizedBox widget.');
         final availableWidth = constraints.maxWidth;
         return _ShaderMaskWrapper(
-          key: const Key('shader_mask'),
+          key: const Key('shader_mask_wrapper'),
           enabled: widget.fadeEdges,
           start: _isStartHidden,
           end: _isEndHidden,
@@ -224,12 +226,12 @@ class __PageIndicatorState extends State<_PageIndicator> {
         idealScroll.clamp(position.minScrollExtent, position.maxScrollExtent);
 
     // calculate if some indicators are hidden on the start or end
-    final isLeftHidden = scroll > position.minScrollExtent;
-    final isRightHidden = scroll < position.maxScrollExtent;
-    if (_isStartHidden != isLeftHidden || _isEndHidden != isRightHidden) {
+    final isStartHidden = scroll > position.minScrollExtent;
+    final isEndHidden = scroll < position.maxScrollExtent;
+    if (_isStartHidden != isStartHidden || _isEndHidden != isEndHidden) {
       setState(() {
-        _isStartHidden = isLeftHidden;
-        _isEndHidden = isRightHidden;
+        _isStartHidden = isStartHidden;
+        _isEndHidden = isEndHidden;
       });
     }
 
@@ -306,6 +308,7 @@ class _ShaderMaskWrapper extends StatelessWidget {
     if (!enabled || (!start && !end)) return child;
     final textDirection = Directionality.of(context);
     return ShaderMask(
+      key: const Key('shader_mask'),
       shaderCallback: (Rect bounds) {
         return LinearGradient(
           begin: Alignment.centerLeft,
@@ -327,7 +330,7 @@ class FaabulPageIndicatorDot extends StatelessWidget {
 
   /// The size of the dot
   ///
-  /// Note that this must correspond to [FaabulPageIndicator.itemSize.width]
+  /// Note that this must correspond to [FaabulPageIndicator.itemSize]
   final double size;
 
   /// Whether the dot should render as active
@@ -347,7 +350,7 @@ class FaabulPageIndicatorDot extends StatelessWidget {
 
   /// Box Decoration
   ///
-  /// Defaults to [BoxShape.circle] and [ThemeData.colorScheme.onSurface] / [ThemeData.colorScheme.outlineVariant]
+  /// Defaults to [BoxShape.circle] and `onSurface` / `outlineVariant` colors.
   final BoxDecoration? decoration;
 
   final double _inactiveDotSize;
