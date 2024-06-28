@@ -376,18 +376,23 @@ class FaabulPageIndicatorDot extends StatelessWidget {
         : BoxDecoration(
             shape: BoxShape.circle, color: colorScheme.outlineVariant);
     final dotSize = isActive ? _activeDotSize : _inactiveDotSize;
-    return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        width: size,
-        height: size,
-        child: Center(
-          child: AnimatedContainer(
-            duration: duration,
-            curve: curve,
-            width: dotSize,
-            height: dotSize,
-            decoration: decoration ?? boxDecoration,
+    return SizedBox(
+      width: size,
+      height: size,
+      child: ClipOval(
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            child: Center(
+              child: AnimatedContainer(
+                duration: duration,
+                curve: curve,
+                width: dotSize,
+                height: dotSize,
+                decoration: decoration ?? boxDecoration,
+              ),
+            ),
           ),
         ),
       ),
