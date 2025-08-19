@@ -159,23 +159,34 @@ class __PageIndicatorState extends State<_PageIndicator> {
   int? _currentPage;
   bool _isStartHidden = false;
   bool _isEndHidden = false;
+  bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
     widget.currentPage.addListener(_currentPageListener);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _currentPageListener());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_isDisposed && _scrollController.hasClients) {
+        _currentPageListener();
+      }
+    });
   }
 
   @override
   void didUpdateWidget(covariant _PageIndicator oldWidget) {
     super.didUpdateWidget(oldWidget);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _currentPageListener());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_isDisposed && _scrollController.hasClients) {
+        _currentPageListener();
+      }
+    });
   }
 
   @override
   void dispose() {
+    _isDisposed = true;
     widget.currentPage.removeListener(_currentPageListener);
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -212,8 +223,11 @@ class __PageIndicatorState extends State<_PageIndicator> {
 
   void _currentPageListener() {
     if (!mounted ||
+        _isDisposed ||
         !_scrollController.hasClients ||
-        widget.currentPage.value == null) return;
+        widget.currentPage.value == null) {
+      return;
+    }
     final offsetStart = widget.currentPage.value! * widget.itemSize.width;
     final offsetEnd = offsetStart + widget.itemSize.width;
     final offsetCenter = (offsetStart + offsetEnd) / 2;
@@ -240,7 +254,15 @@ class __PageIndicatorState extends State<_PageIndicator> {
       // if the scroll is more than half the viewport away, jump to it, otherwise animate
       // we delay this post frame, otherwise the methods would silently fail for some reason
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if ((scroll - position.pixels).abs() > halfViewport) {
+        // Check again after post frame callback
+        if (!mounted || _isDisposed || !_scrollController.hasClients) {
+          return;
+        }
+
+        // Get fresh position after the callback
+        final currentPosition = _scrollController.position;
+        final currentHalfViewport = currentPosition.viewportDimension / 2;
+        if ((scroll - currentPosition.pixels).abs() > currentHalfViewport) {
           _scrollController.jumpTo(scroll);
         } else {
           _scrollController.animateTo(

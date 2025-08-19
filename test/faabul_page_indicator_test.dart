@@ -319,5 +319,138 @@ void main() {
       );
       expect(activeDots.where((dot) => dot.isActive), hasLength(1));
     });
+
+    testWidgets('FaabulPageIndicator handles rapid page changes without errors',
+        (WidgetTester tester) async {
+      controller = PageController();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                Expanded(
+                  child: PageView(
+                    controller: controller,
+                    children: List.generate(
+                        100, (index) => Container(color: Colors.blue)),
+                  ),
+                ),
+                SizedBox(
+                  width: 200,
+                  child: FaabulPageIndicator(
+                    itemCount: 100,
+                    controller: controller,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      // Rapidly jump to different pages
+      controller.jumpToPage(99);
+      await tester.pump();
+      controller.jumpToPage(0);
+      await tester.pump();
+      controller.jumpToPage(50);
+      await tester.pump();
+      controller.jumpToPage(75);
+      await tester.pump();
+      controller.jumpToPage(25);
+      await tester.pumpAndSettle();
+
+      // Test should pass without throwing ScrollController not attached error
+      expect(controller.page, 25);
+    });
+
+    testWidgets(
+        'FaabulPageIndicator handles immediate jump to last page after initialization',
+        (WidgetTester tester) async {
+      controller = PageController();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                Expanded(
+                  child: PageView(
+                    controller: controller,
+                    children: List.generate(
+                        50, (index) => Container(color: Colors.blue)),
+                  ),
+                ),
+                SizedBox(
+                  width: 150,
+                  child: FaabulPageIndicator(
+                    itemCount: 50,
+                    controller: controller,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      // Immediately jump to last page
+      controller.jumpToPage(49);
+      await tester.pumpAndSettle();
+
+      // Test should pass without throwing ScrollController not attached error
+      expect(controller.page, 49);
+    });
+
+    testWidgets('FaabulPageIndicator handles widget disposal during animation',
+        (WidgetTester tester) async {
+      controller = PageController();
+      bool showIndicator = true;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: StatefulBuilder(
+            builder: (context, setState) => Scaffold(
+              body: Column(
+                children: [
+                  Expanded(
+                    child: PageView(
+                      controller: controller,
+                      children: List.generate(
+                          10, (index) => Container(color: Colors.blue)),
+                    ),
+                  ),
+                  if (showIndicator)
+                    FaabulPageIndicator(
+                      itemCount: 10,
+                      controller: controller,
+                    ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => showIndicator = false),
+                    child: const Text('Hide'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Start animating to a different page
+      controller.animateToPage(
+        5,
+        duration: const Duration(seconds: 1),
+        curve: Curves.linear,
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // Dispose the widget during animation
+      await tester.tap(find.text('Hide'));
+      await tester.pumpAndSettle();
+
+      // Test should pass without errors
+      expect(find.byType(FaabulPageIndicator), findsNothing);
+    });
   });
 }
