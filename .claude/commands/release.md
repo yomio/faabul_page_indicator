@@ -11,14 +11,14 @@ description: Bump package version, update changelog, verify metadata, and create
 
 ## Version Bump
 
-- Determine the version bump type from $ARGUMENTS (patch, minor, major) or ask the user if not provided
+- Determine the version bump type based on newly merged pull requests since the latest release
 - Read current version from pubspec.yaml
 - Calculate new version based on semantic versioning rules
 - Update version in pubspec.yaml
 
 ## Changelog Update
 
-- Ask the user for a changelog entry or generate one based on recent commits since last release
+- Generate changelog based on recent commits since last release
 - Update CHANGELOG.md with the new version and changes
 - Ensure proper formatting following the existing pattern
 
